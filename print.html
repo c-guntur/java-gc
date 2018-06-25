@@ -193,7 +193,7 @@
           <strong>Remember</strong>: <span class="color3">parallel</span> and <span class="color3">concurrent</span> are two different things.
         </span>
       </section>
-
+  
       <!-- Garbage Collectors - Marking Classification -->
       <section>
         <h2>Garbage Collectors - Marking Classification</h2>
@@ -305,6 +305,11 @@
             </td>
           </tr>
         </table>
+        <span style="font-size: 0.5em">
+          Memory allocator moves pointer to the beginning of free space.
+          <br/>
+          Objects are added after the free memory pointer.
+        </span>
       </section>
 
       <!-- Garbage Collection - Copying -->
@@ -333,8 +338,12 @@
             </td>
           </tr>
         </table>
+        <span style="font-size: 0.4em">
+          Memory allocator moves pointer to the beginning of free space in the new memory area.
+          <p/>
+          Objects are added sequentially after the free memory pointer.</span>
       </section>
-      
+  
       <!-- Garbage Collection - Patterns Usage -->
       <section>
         <h2>Garbage Collection - Patterns Usage</h2>
@@ -401,11 +410,19 @@
           <p>
         </span>
       </section>
-
+      
       <!-- Generational GC - Memory Layout -->
       <section>
         <h2>Generational GC - Memory Layout</h2>
         <span style="font-size:0.65em;text-align:left;">
+          <strong><span class="color1">Overview</span> : </strong>
+          <br/>
+          <ul>
+            <li>Objects initially allocated to the young <strong class="color1">Eden</strong> region.</li>
+            <li>Objects that live past a collection are <em class="color2">promoted</em> to <strong class="color1">Survivor</strong> and subsequently to <strong class="color1">Tenured</strong>.</li>
+            <li>Collection patterns can be different for each generation to deliver an optimal performance.</li>
+          </ul>
+          <p>
           <img src="images/GenerationalGarbageCollection.png" width="65%"/>
         </span>
         <br>
@@ -429,26 +446,52 @@
             <li>objects that stay "alive" longer get moved to older generation.</li><br/>
             <li><strong class="color1">Permanent Generation</strong> is for storing class/method definitions and static content.</li><br/>
           </ul>
+          
         </span>
       </section>
 
       <!-- Generational GC - Steps -->
       <section>
-        <h2>Generational GC - Young Collection Steps</h2>
+        <h2>Generational GC - Steps</h2>
         <span style="font-size:0.65em;text-align:left;">
-          <img src="images/GenerationalObjectPromotion.png" width="65%"/>
+          <strong><span class="color1">Typical steps in a Generational GC</span>: </strong>
+          <br/>
+          <table style="width:100%;">
+            <tr>
+              <td width="75%" style="font-size: 1.0em; vertical-align: middle;border: hidden">
+              <!--<td width="70%" style="font-size: 1.0em; vertical-align: middle;">-->
+                <span style="font-size:0.85em;text-align:left;">
+                  <br/>
+                    <ol>
+                      <li>Objects first allocated into <strong class="color1">Eden</strong>.</li><br/>
+                      <li>On first GC, live objects from <span class="color1">Eden</span> moved to <strong class="color1">Survivor 1</strong>.</li><br/>
+                      <li>All moved live objects from <span class="color1">Eden</span> marked with an <strong class="color2">Age (tenure)</strong> of <span class="color3">1</span>.</li><br/>
+                      <li><span class="color1">Eden</span> cleared and ready to allocate new objects.</li><br/>
+                      <li>Next GC, collects live objects from <span class="color1">Eden</span> and <span class="color1">Survivor <em>From</em></span> into <strong class="color1">Survivor <em>To</em></strong>.</li><br/>
+                      <li>Objects from <span class="color1">Survivor <em>From</em></span> get <span class="color2">Age</span> incremented by <span class="color3">1</span>, objects from Eden get an <span class="color2">Age</span> of <span class="color3">1</span>.</li><br/>
+                      <li><span class="color1">Eden</span> cleared and ready to allocate new objects.</li><br/>
+                      <li><strong class="dimtext">Steps 5, 6, 7</strong> recur flipping <span class="color1">Survivor 1</span> and <span class="color1">Survivor 2</span> as <em class="color1">From</em> and <em class="color1">To</em>.</li><br/>
+                      <li> Done until <span class="color2">Age</span> threshold (default = <span class="color3">15</span>) reached for any live object.</li><br/>
+                      <li>Next GC, live objects from the current <span class="color1">Survivor</span> with <span class="color2">Age</span> above threshold, move to <strong class="color1">Tenured</strong>.</li><br/>
+                      <li><strong class="dimtext">Steps 5 - 10</strong> recur until a need for a full GC.</li><br/>
+                    </ol>
+                </span>
+              </td>
+              <td width="30%" style="text-align: center; vertical-align: middle; border: hidden">
+              <!--<td width="30%" style="text-align: center; vertical-align: middle;">-->
+                <img src="images/GenerationalMemoryAreas.png" width="100%"/>
+              </td>
+            </tr>
+          </table>
+          
         </span>
-        <br>
-        <span class="dimtext"><span style="font-size: 0.35em; display: block; text-align: center">
-        &nbsp;
-        </span></span>
       </section>
 
       <!-- Generational GC - Types - Older -->
       <section>
-        <h2>Generational GC - Types - History</h2>
+        <h2>Generational GC - Types - Older</h2>
         <span style="font-size:0.6em;text-align:left;">
-          There are a few different types of generationally combined collectors:<br/>
+          There are a few different types of collectors:<br/>
           <ul>
             <li><strong class="color2">Serial Collector</strong> <br/>
               <ul>
@@ -459,8 +502,8 @@
             </li><br/>
             <li><strong class="color2">Parallel Collector</strong><br/><span class="dimtext">a.k.a Throughput collector - Java 1.5 onwards, default collector Java 1.5, 1.6, 1.7 and 1.8 </span>(<span class="color3"><sub>*</sub> &darr;</span>) <br/>
               <ul>
-                <li><strong class="color1">Young</strong> gen., only has the <span class="color2">parallel (scavenge) collection</span>.</li>
-                <li><strong class="color1">Tenured</strong> gen. earlier had a default <span class="color2">serial collector</span> (later versions changed default to <span class="color2">parallel old collector</span>).</li>
+                <li><strong class="color1 dimbg">Young</strong> gen., only has the <span class="color2">parallel (scavenge) collection</span>.</li>
+                <li><strong class="color1 dimbg">Tenured</strong> gen. earlier had a default <span class="color2">serial collector</span> (later versions changed default to <span class="color2">parallel old collector</span>).</li>
                 <li> (<span class="color3"><sub>*</sub></span>)  <em>G1GC was originally planned as default for Java 1.8 but was deferred until Java 9</em>.</li>
               </ul>
             </li><br/>
@@ -468,7 +511,7 @@
               <ul>
                 <li>By default, <strong class="color1 dimbg">Young</strong> gen. uses a serial collection and <strong class="color1 dimbg">Tenured</strong> gen. use a CMS collector.</li>
                 <li>Does not <span class="color1">compact</span> by default, to make GC a low-pause, low-latency, but causes heap fragmentation.</li>
-                <li><em class="color2">An eventual fill up of old memory causes a fall-back to a STW compaction that results in performance degradation</em>.</li>
+                <li><em class="color2">An eventual fill up of old memory causes a fall-back to a STW M/S/C that results in performance degradation</em>.</li>
                 <li><strong>Focuses on live objects and defers garbage handling, until crisis time.</strong> </li>
                 <li><span class="color1">Parallel New</span> does the synchronization needed for CMS that <span class="color1">Parallel Scavenge</span> cannot.</li>
               </ul>
@@ -571,7 +614,7 @@
           </ol>
         </span>
       </section>
-
+  
       <!-- G1GC - Explanation (Picture) -->
       <section>
         <h2>G1GC - Explanation (Picture)</h2>
@@ -597,8 +640,38 @@
       <!-- G1GC - Explanation -->
       <section>
         <h2>G1GC - Explanation</h2>
-        <span style="font-size:0.65em;text-align:left;">
-          <img src="images/G1GC_CycleExplained1.png" width="65%"/>
+        <span style="font-size:0.52em;text-align:left;">
+          <table width="100%">
+            <tr style="border: hidden">
+              <td width="65%" style="font-size: 1.0em; vertical-align: middle;border: hidden">
+                <span class="color1">Explanation: </span><br/>
+                <ul>
+                  <li style="margin-top: 0.35em"><em class="color2">each circle</em> represents a STW process.</li>
+                  <li style="margin-top: 0.35em">two distinct phases of collection.</li>
+                  <li style="margin-top: 0.35em">starts with a <strong class="color3">Young-only</strong> phase.</li>
+                  <li style="margin-top: 0.35em"> <strong class="color1 dimbg">Young Collection</strong> runs periodically on a <strong class="color2">Collection set (CSet)</strong>.</li>
+                  <li style="margin-top: 0.35em">continues until a <em class="color2">threshold</em> is reached, which triggers an <strong class="color1 dimbg">Initial Mark</strong>.</li>
+                  <li style="margin-top: 0.35em"><span class="color1">Initial Mark</span> triggers <span class="color2">concurrent marking</span> in addition to the <span class="color1">young collection</span>.</li>
+                  <li style="margin-top: 0.35em"><span class="color1">Root scanning</span> will halt the <span class="color2">young collection</span> process during this phase.</li>
+                  <li style="margin-top: 0.35em"><strong class="color1 dimbg">Concurrent Mark</strong> takes a while, <span class="color1">Young Collection</span> could continue along-side.</li>
+                  <li style="margin-top: 0.35em">at end of <span class="color1">Concurrent Mark</span>, a <strong class="color1 dimbg">Remark</strong> is initiated.</li>
+                  <li style="margin-top: 0.35em"><span class="color1">Remark</span> finalizes marking, summarizes liveness.</li>
+                  <li style="margin-top: 0.35em"><span class="color1">Remark</span> completion triggers <strong class="color1 dimbg">Cleanup</strong>, reclaiming empty regions.</li>
+                  <li style="margin-top: 0.35em"><span class="color1">Cleanup</span> is used to determine if <span class="color1">Tenured</span> space reclamation required.</li>
+                  <li style="margin-top: 0.35em">Crossing <span class="color2">Heap waste percentage</span> threshold triggers <strong class="color3">Space reclamation</strong> phase.</li>
+                  <li style="margin-top: 0.35em">A <strong class="color2">Collection set (CSet)</strong> of <span class="color1">Young</span> &amp; <span class="color1">Tenured</span> regions picked for collection.</li>
+                  <li style="margin-top: 0.35em">This <strong class="color1 dimbg"> Mixed Collection</strong> is made up to meet a <em class="color2">pause-time goal</em>.</li>
+                  <li style="margin-top: 0.35em">References to objects (in same generation or inter-generational) are tracked.</li>
+                  <li style="margin-top: 0.35em">References are tracked via <strong class="color2">Remembered sets (RSets)</strong> in a <span class="color2">Card table</span>.</li>
+                  <li style="margin-top: 0.35em"><span class="color1">Mixed Collection</span> continues until heap waste percent below threshold.</li>
+                  <li style="margin-top: 0.35em"><span class="color2">Humongous objects</span> processed in <span class="color1">Cleanup</span> phase and during <strong class="color2">Full GC</strong> .</li>
+                </ul>
+              </td>
+              <td width="100%" style="text-align: center; vertical-align: middle; border: hidden">
+                <img src="images/G1GC_Cycle.png"/>
+              </td>
+            </tr>
+          </table>
         </span>
         <p/>
         <span class="dimtext"><span style="font-size: 0.35em; display: block; text-align: center">
@@ -629,13 +702,21 @@
         <h2>G1GC - Young-Only #1 (Survivor Promotion)</h2>
         <table style="width: 100%">
           <tr style="border: hidden">
-            <td width="80%" style="vertical-align: middle; horiz-align: right; border: hidden; font-size:0.8em; text-align:left;">
-              <strong class="color1">Young Collection Picture #1 </strong>
-              <br/>
-              <span class="color2">Eden and Survivor (From) &rArr; Survivor (To)</span>
+            <td width="80%" style="text-align: left; vertical-align: middle; border: hidden">
+              <span style="font-size:0.55em;text-align:left;">
+                <strong><span class="color1">Young Collection (Eden &amp; Survivor<sub><span style="font-size: 0.7em">F</span></sub> &rarr; Survivor<sub><span style="font-size: 0.7em">T</span> </sub>)</span>: </strong>
+                <br/>
+                <ul style="font-size: 0.9em">
+                  <li><span class="color1">Young Collection</span> builds a CollectionSet with some <span class="color1">Eden</span> and <span class="color1">Survivor</span> regions.</li>
+                  <li><span class="color1">Young Collection</span> eventually targets all young regions.</li>
+                  <li><span class="color1">Eden</span> region live objects have <span class="color2">Age</span> set to <span class="color3">1</span> and moved to a <span class="color1">Survivor <em>To</em></span> region.</li>
+                  <li><span class="color1">Survivor <em>From</em></span> region objects with <span class="color2">Age</span> <span class="color3">+1</span> <em><strong class="dimtext">below</strong></em> threshold (default = <span class="color3">15</span>) are moved to a <strong class="color1">Survivor <em>To</em></strong> region. </li>
+                  <li><span class="color1">Survivor <em>From</em></span> region objects with <span class="color2">Age</span> <span class="color3">+1</span> <em><strong class="color2 dimbg">above</strong></em> threshold (default = <span class="color3">15</span>) are moved to <strong class="color1">Tenured</strong> region. </li>
+                </ul>
+              </span>
             </td>
-            <td width="20%" style="vertical-align: middle; horiz-align: right; border: hidden">
-              <img src="images/G1GC_Cycle_YoungCollection.png" width="100%" style="alignment: right"/>
+            <td width="20%" style="text-align: center; vertical-align: middle; border: hidden">
+              <img src="images/G1GC_Cycle_YoungCollection.png" width="100%"/>
             </td>
           </tr>
         </table>
@@ -657,13 +738,20 @@
         <h2>G1GC - Young-Only #2 (Tenured Promotion)</h2>
         <table style="width: 100%">
           <tr style="border: hidden">
-            <td width="80%" style="vertical-align: middle; horiz-align: right; border: hidden; font-size:0.8em; text-align:left;">
-              <strong class="color1">Young Collection Picture #2 </strong>
-              <br/>
-              <span class="color2">Survivor (From) &rArr; Tenured</span>
+            <td width="80%" style="text-align: left; vertical-align: middle; border: hidden">
+              <span style="font-size:0.55em;text-align:left;">
+                <strong><span class="color1">Young Collection (Survivor &rarr; Tenured)</span>: </strong>
+                <br/>
+                <ul style="font-size: 1.0em">
+                  <li><span class="color1">Young Collection</span> builds a CollectionSet with some <span class="color1">Eden</span> and <span class="color1">Survivor</span> regions.</li>
+                  <li>Evaluation before <span class="color2">Age</span> increment, to determine move location, then <span class="color2">Age</span> incremented and objects moved.</li>
+                  <li><span class="color1">Survivor <em>From</em></span> region objects with <span class="color2">Age</span> <span class="color3">+1</span> <em><strong class="dimtext">below</strong></em> threshold (default = <span class="color3">15</span>) are moved to a <strong class="color1">Survivor <em>To</em></strong> region. </li>
+                  <li><span class="color1">Survivor <em>From</em></span> region objects with <span class="color2">Age</span> <span class="color3">+1</span> <em><strong class="color2 dimbg">above</strong></em> threshold (default = <span class="color3">15</span>) are moved to <strong class="color1">Tenured</strong> region. </li>
+                </ul>
+              </span>
             </td>
-            <td width="20%" style="vertical-align: middle; horiz-align: right; border: hidden">
-              <img src="images/G1GC_Cycle_YoungCollection.png" width="100%" style="alignment: right"/>
+            <td width="20%" style="text-align: center; vertical-align: middle; border: hidden">
+              <img src="images/G1GC_Cycle_YoungCollection.png" width="100%"/>
             </td>
           </tr>
         </table>
@@ -685,10 +773,20 @@
         <h2>G1GC - Initial Mark</h2>
         <table style="width: 100%">
           <tr style="border: hidden">
-            <td width="80%" style="vertical-align: middle; horiz-align: right; border: hidden; font-size:0.8em; text-align:left;">
-              <strong class="color1">Young Collection - Initial Mark </strong>
+            <td width="80%" style="text-align: left; vertical-align: middle; border: hidden">
+              <span style="font-size:0.55em;text-align:left;">
+                <strong><span class="color1">Young-Only - Initial Mark</span>: </strong>
+                <br/>
+                <ul style="font-size: 0.9em">
+                  <li>Triggered when a % of heap is occupied <span class="dimtext"> - or - </span> when the <span class="color1">Survivor <em>To</em></span> minimum creation space threshold is reached.</li>
+                  <li>Piggy backs on <span class="dimtext">- and -</span> starts with a <span class="color1">Young Collection</span> (a CollectionSet with some <span class="color1">Eden</span> and <span class="color1">Survivor</span> regions).</li>
+                  <li>Mark <span class="color1">Survivor</span> regions that have references to objects in <span class="color1">Tenured</span> regions.</li>
+                  <li>Triggers the concurrent <span class="color1">Root Region scans</span> and <span class="color1">Concurrent Marking</span> processes.</li>
+                  <li>As the name suggests, this is just a <span class="color2">marking</span> process, <span class="color1">Young Collection</span> continues during the marking.</li>
+                </ul>
+              </span>
             </td>
-            <td width="20%" style="vertical-align: middle; horiz-align: right; border: hidden">
+            <td width="20%" style="text-align: center; vertical-align: middle; border: hidden">
               <img src="images/G1GC_Cycle_InitialMark.png" width="100%"/>
             </td>
           </tr>
@@ -754,12 +852,21 @@
         <h2>G1GC - Concurrent - Marking</h2>
         <table style="width: 100%">
           <tr style="border: hidden">
-            <td width="80%" style="vertical-align: middle; horiz-align: right; border: hidden; font-size:0.8em; text-align:left;">
-              <strong class="color1">Concurrent Marking Picture #1 </strong>
-              <br/>
-              <span class="color2">Based on a <strong class="color2">Snapshot-At-The-Beginning (SATB)</strong></span>
+            <td width="80%" style="text-align: left; vertical-align: middle; border: hidden">
+              <span style="font-size:0.55em;text-align:left;">
+                <strong><span class="color1">Young-Only - Concurrent Marking</span>: </strong>
+                <br/>
+                <ul style="font-size: 0.8em">
+                  <li>Concurrent process, does not stop application threads.</li>
+                  <li><span class="color1">Concurrent Mark</span> begins with a <strong class="color2">Snapshot-At-The-Beginning (SATB)</strong> (<span class="dimtext">remember: conservative garbage collection</span>).</li>
+                  <li>If objects move to <span class="color1">Tenured</span> after the SATB, all such objects are <em class="color2">implicitly considered live</em>, and not checked.</li>
+                  <li><span class="color1">Young Collection</span> continues during <span class="color1">Concurrent Mark</span>, <span class="color1">Remark</span> and <span class="color1">Cleanup</span>.</li>
+                  <li>The <span class="color1">Concurrent Marking</span> process and the <span class="color1">Root scan</span> are frequently halted by periodic <span class="color1">Young Collection</span>s. </li>
+                  <li>The completion of the <span class="color1">Concurrent Mark</span> triggers a <strong class="color1">Remark</strong>.</li>
+                </ul>
+              </span>
             </td>
-            <td width="20%" style="vertical-align: middle; horiz-align: right; border: hidden">
+            <td width="20%" style="text-align: center; vertical-align: middle; border: hidden">
               <img src="images/G1GC_Cycle_ConcurrentMarking.png" width="100%"/>
             </td>
           </tr>
@@ -777,7 +884,7 @@
   
       <!-- G1GC - Concurrent Marking - Pictorial -->
       <section>
-        <h2>G1GC - Concurrent Marking - Picture 2</h2>
+        <h2>G1GC - Concurrent Marking - Pictorial</h2>
         <p/>
         <span style="font-size:0.55em;text-align:left;">
           The below pictures show a concurrent mark liveness check (tri-color painting).<br/>
@@ -829,10 +936,18 @@
         <h2>G1GC - Remark</h2>
         <table style="width: 100%">
           <tr style="border: hidden">
-            <td width="80%" style="vertical-align: middle; horiz-align: right; border: hidden; font-size:0.8em; text-align:left;">
-              <strong class="color1">Young Collection - Remark </strong>
+            <td width="80%" style="text-align: left; vertical-align: middle; border: hidden">
+              <span style="font-size:0.55em;text-align:left;">
+                <strong><span class="color1">Young-Only - Remark</span>: </strong>
+                <br/>
+                <ul style="font-size: 0.9em">
+                  <li><span class="color1">Remark</span> is triggered when <span class="color1">Concurrent Marking</span> and <span class="color1">Region scans</span> are completed.</li>
+                  <li>Finalizes the marking, performs <span class="color2">global reference processing</span> and <span class="color2">class unloading</span>.</li>
+                  <li><strong class="color2">G1</strong> calculates the liveness information concurrently, to be used to perform the next step: <span class="color1">Cleanup</span>.</li>
+                </ul>
+              </span>
             </td>
-            <td width="20%" style="vertical-align: middle; horiz-align: right; border: hidden">
+            <td width="20%" style="text-align: center; vertical-align: middle; border: hidden">
               <img src="images/G1GC_Cycle_Remark.png" width="100%"/>
             </td>
           </tr>
@@ -855,10 +970,20 @@
         <h2>G1GC - Cleanup</h2>
         <table style="width: 100%">
           <tr style="border: hidden">
-            <td width="80%" style="vertical-align: middle; horiz-align: right; border: hidden; font-size:0.8em; text-align:left;">
-              <strong class="color1">Young Collection - Cleanup </strong>
+            <td width="80%" style="text-align: left; vertical-align: middle; border: hidden">
+              <span style="font-size:0.55em;text-align:left;">
+                <strong><span class="color1">Young-Only - Cleanup</span>: </strong>
+                <br/>
+                <ul style="font-size: 0.9em">
+                  <li>Utilizes the liveness summary calculated after the <span class="color1">Remark</span> pause.</li>
+                  <li>Updates internal data structures after eliminating de-referenced objects.</li>
+                  <li>Reclaims completely empty regions for new allocations.</li>
+                  <li>Determines if a <strong class="color2">Space Reclamation</strong> phase should follow (based on heap waste thresholds).</li>
+                  <li>Irrespective of the outcome of the above determination, a <span class="color1">Young Collection</span> is triggered right after this pause.</li>
+                </ul>
+              </span>
             </td>
-            <td width="20%" style="vertical-align: middle; horiz-align: right; border: hidden">
+            <td width="20%" style="text-align: center; vertical-align: middle; border: hidden">
               <img src="images/G1GC_Cycle_Cleanup.png" width="100%"/>
             </td>
           </tr>
@@ -878,10 +1003,21 @@
         <h2>G1GC - Mixed Collection</h2>
         <table style="width: 100%">
           <tr style="border: hidden">
-            <td width="80%" style="vertical-align: middle; horiz-align: right; border: hidden; font-size:0.8em; text-align:left;">
-              <strong class="color1">Space Reclamation - Mixed Collection</strong>
+            <td width="80%" style="text-align: left; vertical-align: middle; border: hidden">
+            <span style="font-size:0.55em;text-align:left;">
+              <strong><span class="color1">Space Reclamation - Mixed Collection</span>: </strong>
+              <br/>
+              <ul style="font-size: 0.9em">
+                <li>A <span class="color2">Mixed Collection</span> is triggered when the percentage of waste (garbage) in the heap reaches a certain threshold.</li>
+                <li><span class="color2">Mixed Collection</span> involves picking up a few regions (<span class="color1">Eden</span>, <span class="color1">Survivor</span> and a few <span class="color1">Tenured</span>) for collection.</li>
+                <li>The combination is made up based on estimated sum of pause-times of the <strong class="color2">Collection Set</strong>.</li>
+                <li>Several cycles of <span class="color2">Mixed Collection</span> may run, until the heap waste (garbage) percent is below the set threshold.</li>
+                <li>After each collection, the liveness of the <span class="color1">Tenured</span> region objects are re-evaluated.</li>
+                <!--<li><span class="color3">NOTE</span>: <span class="color2">Humongous objects</span> are never moved or compacted, only collected or left-alone.</li>-->
+              </ul>
+              </span>
             </td>
-            <td width="20%" style="vertical-align: middle; horiz-align: right; border: hidden">
+            <td width="20%" style="text-align: center; vertical-align: middle; border: hidden">
               <img src="images/G1GC_Cycle_MixedCollection.png" width="100%"/>
             </td>
           </tr>
