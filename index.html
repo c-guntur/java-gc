@@ -151,8 +151,8 @@
           <br/>
           As a broad definition, <strong class="color1">garbage collection</strong> is the process of:
           <ul>
-            <li>looking up managed memory</li><br/>
-            <li>identify all objects that are in use (<em class="color2">live objects</em>)</li><br/>
+            <li>looking up a <span class="color2">managed memory</span> area</li><br/>
+            <li>identify all objects that are in use (<em class="color2">live objects</em>) in this area</li><br/>
             <li>mark non-live objects as <em class="color2">garbage</em> (<em class="color2">unused</em> or <em class="color2">no-reference</em> are other common terms)</li><br/>
             <li>[<em class="color2">occasionally</em>] reclaim memory by deleting garbage</li><br/>
             <li>[<em class="color2">occasionally</em>] compact memory defragmenting live objects (create more contiguous space)</li><br/>
@@ -351,7 +351,7 @@
               <ul>
                 <li>efficient for <span class="color2">larger memory areas</span>.</li><br/>
                 <li>works best on <span class="color2">longer-lived non-volatile objects</span>.</li><br/>
-                <li><span class="color1">incremental</span> collector.</li><br/>
+                <li>can be an <span class="color1">incremental</span> collector.</li><br/>
                 <li>doesn't need a lot of free space to run.</li><br/>
                 <li><span class="color2">either</span>
                   <ul>
@@ -365,7 +365,7 @@
               <ul>
                 <li>efficient for <span class="color2">small memory areas</span>.</li><br/>
                 <li>works best on <span class="color2">short-lived objects</span>.</li><br/>
-                <li><span class="color1">all-at-once</span> collector.</li><br/>
+                <li>is an <span class="color1">all-at-once</span> collector.</li><br/>
                 <li>needs <span class="color1">2x the memory space</span> to run.</li><br/>
                 <li><span class="color1">stop-the-world</span> collector.</li><br/>
               </ul>
@@ -1602,7 +1602,7 @@
             <img src="scaffolding/twitter.svg" style="height:20px; vertical-align:middle"/>&nbsp;&nbsp;<span class="footer">@CGuntur</span>
         </a>
         &nbsp;&nbsp;&nbsp;&nbsp;
-        <a href="http://www.linkedin.com/in/chandraguntur" style="text-decoration:none">
+        <a href="http://www.linkedin.com/in/cguntur" style="text-decoration:none">
             <img src="scaffolding/linkedin.svg" style="height:20px; vertical-align:middle"/>&nbsp;&nbsp;<span class="footer">Chandra Guntur</span>
         </a>
         &nbsp;&nbsp;&nbsp;&nbsp;
